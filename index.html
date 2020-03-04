@@ -1,6 +1,3 @@
-<!--
- Hello World
--->
 <!DOCTYPE html>
 <html>
   <head>
@@ -22,23 +19,41 @@
     </style>
     
     <script>
-      // Enter the API key from the Google Develoepr Console - to handle any unauthenticated
-      // requests in the code.
-      // The provided key works for this sample only when run from
-      // https://google-api-javascript-client.googlecode.com/hg/samples/requestSample.html
-      // To use in your own application, replace this API key with your own.
-      var apiKey = '004606680159553452308:lljkd5nktz4';
+      // Enter the API key from the Google Develoepr Console
+      var apiKey = 'AIzaSyCM19ng0CPjCjb6qoGqEn_d9n0j9vIG_Yw'    // 
+      var searchEngineId = '004606680159553452308:lljkd5nktz4' // same as CX
+      var requestUrl = 'https://www.googleapis.com/customsearch/v1?'
+
       function handleClientLoad() {
-          gapi.load('client', makeRequest);
+          gapi.load('client', {
+            callback: function() {
+            // Handle gapi.client initialization
+            initGapiClient();
+            },
+            onerror: function() {
+            // Handle loading error.
+            alert('gapi.client failed to load!');
+            },
+            timeout: 5000, // 5 seconds.
+            ontimeout: function() {
+            // Handle timeout.
+            alert('gapi.client could not load in a timely manner!');
+            }
+          });
       }
-      function initClient() {
-        gapi.client.init({
-          apiKey: apiKey,
-        }).then(makeRequest)
+
+      function onRejected(response){alert('reject')}
+      function onFulfilled(reason){}
+
+      function initGapiClient() {
+       gapi.client.init({
+          apiKey: apiKey
+        }).then(onFulfilled, onRejected)
       }
+
       function makeRequest() {
-        gapi.client.setApiKey(apiKey);
-        function writeResponse(response) {
+        // response handler
+        function writeResponse(response, raw) {
           var searchResultsDiv = document.getElementById('searchResults');         
           response.items.forEach(function(item) { 
             var lnk = item.link;
@@ -46,19 +61,36 @@
 	          img.setAttribute('src', lnk);
             img.setAttribute('class','img')
 	          searchResultsDiv.appendChild(img);
-            });
+          });
         }
+
+        // build request
         var searchTerm = document.getElementById('searchTerm').value;
-        var restRequest = gapi.client.request({
-           'path': 'https://www.googleapis.com/customsearch/v1?',
-           'params' : {'q' : searchTerm, 
-                        'key' : 'AIzaSyCIOVTxOXQsJTNz8DfrM8oi7bUdHC0nnvQ', 
-                        'cx': '004606680159553452308:lljkd5nktz4',
-                        'searchType' : 'image'}
-        });
-        restRequest.execute(writeResponse);
+        gapi.client.request({'path': requestUrl, 
+                              'params' : {'q' : searchTerm, 
+                              'key' : apiKey, 
+                              'cx': searchEngineId,
+                              'searchType' : 'image'}})
+          .then(function(response) {
+            // Handle response
+            var searchResultsDiv = document.getElementById('searchResults');
+            searchResultsDiv.innerHTML = ""         
+            var items = response.result.items
+            for (var i = 0; i < items.length; i++) {
+            var lnk = items[i].link;
+            var img = document.createElement('img');
+	          img.setAttribute('src', lnk);
+            img.setAttribute('class','img')
+	          searchResultsDiv.appendChild(img);
+          }
+          }, function(reason) {
+            // Handle error
+            alert('error in response')
+          }
+        );
       }
     </script>
+    
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};handleClientLoad();"
       onreadystatechange="if (this.readyState === 'complete') this.onload();">
@@ -68,7 +100,7 @@
   <body>
     <p>Enter a Person, Place or Thing</p>
     <label for="searchTerm"></label>
-    <input id="searchTerm" type="text" value="" />
+    <input id="searchTerm" type="text" value="tomato" />
     <button onclick="makeRequest();">
       Retieve Images
     </button>

@@ -1,0 +1,78 @@
+<!--
+ Hello World
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <style>
+      #info {
+        border: 1px solid black;
+        padding: 0.25em;
+      }
+    .img {
+        position: relative;
+        float: left;
+        width:  200px;
+        height: 200px;
+        background-position: 50% 50%;
+        background-repeat:   no-repeat;
+        background-size:     cover;
+}
+    </style>
+    
+    <script>
+      // Enter the API key from the Google Develoepr Console - to handle any unauthenticated
+      // requests in the code.
+      // The provided key works for this sample only when run from
+      // https://google-api-javascript-client.googlecode.com/hg/samples/requestSample.html
+      // To use in your own application, replace this API key with your own.
+      var apiKey = '004606680159553452308:lljkd5nktz4';
+      function handleClientLoad() {
+          gapi.load('client', makeRequest);
+      }
+      function initClient() {
+        gapi.client.init({
+          apiKey: apiKey,
+        }).then(makeRequest)
+      }
+      function makeRequest() {
+        gapi.client.setApiKey(apiKey);
+        function writeResponse(response) {
+          var searchResultsDiv = document.getElementById('searchResults');         
+          response.items.forEach(function(item) { 
+            var lnk = item.link;
+            var img = document.createElement('img');
+	          img.setAttribute('src', lnk);
+            img.setAttribute('class','img')
+	          searchResultsDiv.appendChild(img);
+            });
+        }
+        var searchTerm = document.getElementById('searchTerm').value;
+        var restRequest = gapi.client.request({
+           'path': 'https://www.googleapis.com/customsearch/v1?',
+           'params' : {'q' : searchTerm, 
+                        'key' : 'AIzaSyCIOVTxOXQsJTNz8DfrM8oi7bUdHC0nnvQ', 
+                        'cx': '004606680159553452308:lljkd5nktz4',
+                        'searchType' : 'image'}
+        });
+        restRequest.execute(writeResponse);
+      }
+    </script>
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad();"
+      onreadystatechange="if (this.readyState === 'complete') this.onload();">
+    </script>
+  </head>
+
+  <body>
+    <p>Enter a Person, Place or Thing</p>
+    <label for="searchTerm"></label>
+    <input id="searchTerm" type="text" value="" />
+    <button onclick="makeRequest();">
+      Retieve Images
+    </button>
+    <div style="margin-top:0.5em;">
+      <div id="searchResults"></div></div>
+  </body>
+</html>

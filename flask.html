@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<script type=text/javascript>
+    $(function() {
+      $('a#test').bind('click', function() {
+        url = 'http://127.0.0.1:5000/hello/foobar321';
+        $.getJSON(
+          url,
+          function(data1) {
+            alert("hello");
+            //$("#Result").text(data);
+          }
+        );
+        return false;
+      });
+    });
+</script>
+
+</head>
+<body>
+
+<div class='container'>
+    <h3>Test</h3>
+        <form>
+            <a href='#' id='test'>
+                <button class='btn btn-default'>Flask Test</button></a>
+        </form>
+
+</div>
+</body>
+</html>
